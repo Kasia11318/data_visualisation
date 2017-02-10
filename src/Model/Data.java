@@ -14,7 +14,7 @@ public class Data {
     /**
      * Point values in consecutive dimensions
      */
-    private List<float> data;
+    private List<Float> data;
 
     /**
      * Names of consecutive dimensions
@@ -27,12 +27,12 @@ public class Data {
     private List<String> dataSeriesNames;
 
     public Data() {
-        data = new ArrayList<>();
+        data = new ArrayList<Float>();
         dimensionNames = new ArrayList<>();
         dataSeriesNames = new ArrayList<>();
     }
 
-    public List<float> getData() {
+    public List<Float> getData() {
         return data;
     }
 
@@ -44,7 +44,7 @@ public class Data {
         return dimensionNames;
     }
 
-    public void setData(List<float> data) {
+    public void setData(List<Float> data) {
         this.data = data;
     }
 

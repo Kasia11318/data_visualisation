@@ -47,15 +47,8 @@ public class ApplicationWindow extends JFrame {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JToolBar toolBar = new JToolBar("Toolbar", JToolBar.CENTER);
-        toolBar.setBackground(Color.LIGHT_GRAY);
-
-        JButton createProjectButton = new JButton("Create project");
-        createProjectButton.setBackground(Color.WHITE);
-        createProjectButton.setSize(new Dimension(400, 400));
+        JButton createProjectButton = new JButton("Create project", createImageIcon("images/create.png"));
         createProjectButton.setBorder(new LineBorder(Color.black, 2));
-
-        toolBar.add(createProjectButton);
 
         this.add(createProjectButton, gbc);
         this.addWindowListener(new WindowListener() {
@@ -96,6 +89,11 @@ public class ApplicationWindow extends JFrame {
         });
         this.setSize(getWindowSize());
         this.setVisible(true);
+    }
+
+    public void runStartScreen() {
+        JFrame jFrame = new JFrame("NEW PROJECT");
+        jFrame.setSize(new Dimension(400, 300));
     }
 
     private void centeringWindow() {
