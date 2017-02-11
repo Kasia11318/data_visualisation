@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -13,6 +14,9 @@ public class Project {
 
     private Vector<Integer> unaccountedColumn;
 
+    /**
+     * This is just a directory. The output file will be saved as this directory + project name + ".mgfk" (file extension)
+     */
     private String pathSavedFile;
 
     private String defaultOpenFilesType;
@@ -104,9 +108,70 @@ public class Project {
         temp = st.nextToken();
         this.defaultDimensionNames = (temp.equals("true"));
 
-        // TODO: loading columns, data series names, dimension names, points
+        // unaccounted columns
+        fileLine = bufferedReader.readLine();
+        if (fileLine == null) {
+            throw new IOException(); // can change to something like ProjectException if needed
+        }
+        StringTokenizer st1 = new StringTokenizer(fileLine, ",");
+        while (st1.hasMoreElements()) {
+            temp = st1.nextToken();
+            if (temp.equals("-1")) {
+                break;
+            }
+            try {
+                unaccountedColumn.add((Integer) Integer.parseInt(temp));
+            } catch (NumberFormatException nfe) {
+                throw new IOException(); // can change to something like ProjectException if needed
+            }
+        }
 
-        this.pathSavedFile = filePath;
+        // data series names
+        if (!defaultDataSeriesNames) {
+            fileLine = bufferedReader.readLine();
+            if (fileLine == null) {
+                throw new IOException(); // can change to something like ProjectException if needed
+            }
+            StringTokenizer st2 = new StringTokenizer(fileLine, ",");
+            List<String> names = new ArrayList<>();
+            while (st2.hasMoreElements()) {
+                names.add(st2.nextToken());
+            }
+            data.setDataSeriesNames(names);
+        }
+
+        // dimension names
+        if (!defaultDimensionNames) {
+            fileLine = bufferedReader.readLine();
+            if (fileLine == null) {
+                throw new IOException(); // can change to something like ProjectException if needed
+            }
+            StringTokenizer st2 = new StringTokenizer(fileLine, ",");
+            List<String> names = new ArrayList<>();
+            while (st2.hasMoreElements()) {
+                names.add(st2.nextToken());
+            }
+            data.setDimensionNames(names);
+        }
+
+        // points
+        List<List<Float>> points = new ArrayList<List<Float>>();
+        while ((fileLine = bufferedReader.readLine()) != null) {
+            List<Float> values = new ArrayList<>();
+            StringTokenizer st2 = new StringTokenizer(fileLine, ",");
+            while (st2.hasMoreElements()) {
+                try {
+                    values.add(Float.parseFloat(st2.nextToken()));
+                } catch (NumberFormatException nfe) {
+                    throw new IOException(); // can change to something like ProjectException if needed
+                }
+            }
+            points.add(values);
+        }
+        data.setData(points);
+
+        // file path
+        this.pathSavedFile = filePath.substring(0, filePath.length() - projectName.length() - 5);
 
         bufferedReader.close();
     }
@@ -123,7 +188,7 @@ public class Project {
     public void saveProject() throws IOException {
         StringBuilder sb = new StringBuilder();
 
-        File file = new File(pathSavedFile);
+        File file = new File(pathSavedFile + projectName + ".mgfk");
 
         if (!file.exists()) {
             file.createNewFile();
