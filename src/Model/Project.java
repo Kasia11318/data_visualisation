@@ -100,9 +100,9 @@ public class Project {
         this.projectName = st.nextToken();
         this.defaultOpenFilesType = st.nextToken();
         temp = st.nextToken();
-        this.defaultDataSeriesNames = (temp.equals("true")) ? true : false;
+        this.defaultDataSeriesNames = (temp.equals("true"));
         temp = st.nextToken();
-        this.defaultDimensionNames = (temp.equals("true")) ? true : false;
+        this.defaultDimensionNames = (temp.equals("true"));
 
         // TODO: loading columns, data series names, dimension names, points
 
