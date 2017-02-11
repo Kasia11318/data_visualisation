@@ -1,9 +1,8 @@
 package Model;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class Project {
@@ -23,7 +22,8 @@ public class Project {
     private boolean defaultDimensionNames;
 
     public Project() {
-
+        unaccountedColumn = new Vector<>();
+        data = new Data();
     }
 
     public void setData(Data data) {
@@ -82,8 +82,33 @@ public class Project {
         return defaultDimensionNames;
     }
 
-    public void loadProject() {
-        // TODO: code
+    public void loadProject(String filePath) throws IOException {
+        FileInputStream fileStream = new FileInputStream(filePath);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileStream));
+        String fileLine;
+
+        // project properties
+        fileLine = bufferedReader.readLine();
+        if (fileLine == null) {
+            throw new IOException(); // can change to something like ProjectException if needed
+        }
+        StringTokenizer st = new StringTokenizer(fileLine, ",");
+        if (st.countTokens() != 4) {
+            throw new IOException(); // can change to something like ProjectException if needed
+        }
+        String temp;
+        this.projectName = st.nextToken();
+        this.defaultOpenFilesType = st.nextToken();
+        temp = st.nextToken();
+        this.defaultDataSeriesNames = (temp.equals("true")) ? true : false;
+        temp = st.nextToken();
+        this.defaultDimensionNames = (temp.equals("true")) ? true : false;
+
+        // TODO: loading columns, data series names, dimension names, points
+
+        this.pathSavedFile = filePath;
+
+        bufferedReader.close();
     }
 
     public void newProject(String projectName, String pathSavedFile, String defaultOpenFilesType,
@@ -125,6 +150,36 @@ public class Project {
         }
         bufferedWriter.write(sb.toString());
         bufferedWriter.newLine();
+
+        // data series names
+        if (!defaultDataSeriesNames) {
+            sb.setLength(0);
+            for (String dataSeriesName : data.getDataSeriesNames()) {
+                sb.append(dataSeriesName).append(",");
+            }
+            bufferedWriter.write(sb.toString());
+            bufferedWriter.newLine();
+        }
+
+        // dimension names
+        if (!defaultDimensionNames) {
+            sb.setLength(0);
+            for (String dimensionName : data.getDimensionNames()) {
+                sb.append(dimensionName).append(",");
+            }
+            bufferedWriter.write(sb.toString());
+            bufferedWriter.newLine();
+        }
+
+        // point values
+        for (List<Float> pointValues : data.getData()) {
+            sb.setLength(0);
+            for (Float value : pointValues) {
+                sb.append(value).append(",");
+            }
+            bufferedWriter.write(sb.toString());
+            bufferedWriter.newLine();
+        }
 
         bufferedWriter.close();
     }
