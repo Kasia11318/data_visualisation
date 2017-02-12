@@ -1,5 +1,7 @@
 package View;
 
+import Controller.MainController;
+import Model.Project;
 import com.sun.deploy.panel.NodeBorder;
 
 import javax.swing.*;
@@ -11,10 +13,20 @@ public class ApplicationWindow extends JFrame {
 
     private String windowTitle;
     private Dimension windowSize;
+    private boolean isCreated;
 
     public ApplicationWindow(String windowTitle) {
         this.windowTitle = windowTitle;
-        this.windowSize = new Dimension(700, 600);
+        this.windowSize = new Dimension(1000, 800);
+        this.isCreated = false;
+    }
+
+    public boolean isCreated() {
+        return isCreated;
+    }
+
+    public void setCreated(boolean created) {
+        isCreated = created;
     }
 
     public String getWindowTitle() {
@@ -36,7 +48,7 @@ public class ApplicationWindow extends JFrame {
         this.windowSize = windowSize;
     }
 
-    public void run() {
+    public void run(MainController mainController) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle(windowTitle);
         this.setSize(this.getWindowSize());
@@ -52,9 +64,16 @@ public class ApplicationWindow extends JFrame {
         createProjectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                runStartScreen();
+                runStartScreen(mainController);
             }
         });
+
+        if (this.isCreated) {
+            JPanel projectPanel = new JPanel();
+            projectPanel.setBorder(BorderFactory.createTitledBorder("Project"));
+
+            this.add(projectPanel);
+        }
 
         createProjectButton.setPreferredSize(new Dimension(300, 100));
 
@@ -99,7 +118,7 @@ public class ApplicationWindow extends JFrame {
         this.setVisible(true);
     }
 
-    private void runStartScreen() {
+    private void runStartScreen(MainController mainController) {
         JFrame jFrame = new JFrame("NEW PROJECT");
         Box boxLabel = Box.createVerticalBox();
         Box box = Box.createVerticalBox();
@@ -110,20 +129,22 @@ public class ApplicationWindow extends JFrame {
         JLabel savedPathLabel = new JLabel("Saved path: ", SwingConstants.CENTER);
         JLabel isDefaultSeriesNamesLabel = new JLabel("Deafult series names: ", SwingConstants.CENTER);
         JLabel projectNameLabel = new JLabel("Project name: ");
-        JTextField savedPath = new JTextField();
-        JTextField projectName = new JTextField();
+        JLabel isDefaultDimensionNamesLabel = new JLabel("Default dimension names: ", SwingConstants.CENTER);
+        JTextField savedPathField = new JTextField();
+        JTextField projectNameField = new JTextField();
         JButton selectSavePath = new JButton("Select");
         JButton create = new JButton("Create");
         JCheckBox isDefalultSeriesNames = new JCheckBox();
+        JCheckBox isDefaultDimensionNames = new JCheckBox();
 
         jPanel1.setName("Create new project");
         jPanel2.setName("SavedPath");
         jPanel3.setName("Create");
 
-        savedPath.setPreferredSize(new Dimension(250, 30));
-        projectName.setPreferredSize(new Dimension(250,30));
+        savedPathField.setPreferredSize(new Dimension(250, 30));
+        projectNameField.setPreferredSize(new Dimension(250,30));
 
-        Dimension startScreenSize = new Dimension(600, 500);
+        Dimension startScreenSize = new Dimension(700, 610);
         jFrame.setSize(startScreenSize);
         this.centeringWindow(jFrame);
         jFrame.setLayout(new GridLayout(3,1));
@@ -147,10 +168,29 @@ public class ApplicationWindow extends JFrame {
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION ) {
-                    savedPath.setText(chooser.getSelectedFile().getPath());
+                    savedPathField.setText(chooser.getSelectedFile().getPath());
                 }
             }
-    });
+        });
+
+        create.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String projectName = projectNameField.getText();
+                String savedPath = savedPathField.getText();
+                String defaultFilesTypes = fileTypesComboBox.getSelectedItem().toString();
+                boolean defaultDataSeriesNames = isDefalultSeriesNames.isSelected();
+                boolean defaultDimensionNames = isDefaultDimensionNames.isSelected();
+
+                Project project = onClickCreateButton(projectName, savedPath, defaultFilesTypes, defaultDataSeriesNames, defaultDimensionNames);
+                mainController.setProject(project);
+                jFrame.dispose();
+                setCreated(true);
+                getContentPane().removeAll();
+                getContentPane().repaint();
+                JOptionPane.showMessageDialog(null, "Project was successfully created!");
+            }
+        });
 
         boxLabel.add(Box.createVerticalStrut(20));
         boxLabel.add(fileTypesLabel);
@@ -160,19 +200,23 @@ public class ApplicationWindow extends JFrame {
         boxLabel.add(projectNameLabel);
         boxLabel.add(Box.createVerticalStrut(25));
         boxLabel.add(isDefaultSeriesNamesLabel);
+        boxLabel.add(Box.createVerticalStrut(25));
+        boxLabel.add(isDefaultDimensionNamesLabel);
 
         box.add(Box.createVerticalStrut(10));
         box.add(fileTypesComboBox);
         box.add(Box.createVerticalStrut(10));
 
-        jPanel2.add(savedPath);
+        jPanel2.add(savedPathField);
         jPanel2.add(selectSavePath);
 
         box.add(jPanel2);
         box.add(Box.createVerticalStrut(15));
-        box.add(projectName);
+        box.add(projectNameField);
         box.add(Box.createVerticalStrut(15));
         box.add(isDefalultSeriesNames);
+        box.add(Box.createVerticalStrut(15));
+        box.add(isDefaultDimensionNames);
 
         jPanel3.setBackground(Color.GRAY);
         jPanel3.setBorder(new NodeBorder(Color.DARK_GRAY, 3));
@@ -204,5 +248,18 @@ public class ApplicationWindow extends JFrame {
             System.err.println("Couldn't find file: " + path);
             return null;
         }
+    }
+
+    private Project onClickCreateButton (
+            String projectName,
+            String pathSavedFile,
+            String defaultOpenFilesType,
+            boolean defaultDataSeriesNames,
+            boolean defaultDimensionNames
+    ) {
+        Project project = new Project();
+        project.newProject(projectName, pathSavedFile, defaultOpenFilesType, defaultDataSeriesNames, defaultDimensionNames);
+
+        return project;
     }
 }

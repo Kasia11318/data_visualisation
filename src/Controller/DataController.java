@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by root on 11.02.17.
- */
 public class DataController {
     public Data importData(String nameOfFile) throws IOException{
         Data data = new Data();
