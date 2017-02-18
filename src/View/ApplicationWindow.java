@@ -5,7 +5,6 @@ import Model.Project;
 import com.sun.deploy.panel.NodeBorder;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -53,72 +52,68 @@ public class ApplicationWindow extends JFrame {
         this.setTitle(windowTitle);
         this.setSize(this.getWindowSize());
         this.centeringWindow(this);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JMenuBar menuBar = new MainMenuBar(mainController, this);
+        menuBar.setBackground(Color.LIGHT_GRAY);
 
-        JButton createProjectButton = new JButton("Create project", createImageIcon("images/create.png"));
-        createProjectButton.setBorder(new LineBorder(Color.black, 2));
-        createProjectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                runStartScreen(mainController);
-            }
-        });
+        this.setJMenuBar(menuBar);
 
-        if (this.isCreated) {
-            JPanel projectPanel = new JPanel();
-            projectPanel.setBorder(BorderFactory.createTitledBorder("Project"));
+        /*
+         * when project was created
+         */
+        if (mainController.getProject() != null) {
+            JLabel projectNameLabelL = new JLabel("Project name: ");
+            JLabel savedPathLabelL = new JLabel("Saved path: ");
+            JLabel filesTypesLabelL = new JLabel("Files types: ");
 
-            this.add(projectPanel);
+            JLabel projectNameLabelR = new JLabel(mainController.getProject().getProjectName());
+            JLabel savedPathLabelR = new JLabel(mainController.getProject().getPathSavedFile());
+            JLabel filesTypesLabelR = new JLabel(mainController.getProject().getDefaultOpenFilesType());
+
+            JPanel projectInfoPanel = new JPanel();
+            projectInfoPanel.setLayout(new BoxLayout(projectInfoPanel, BoxLayout.X_AXIS));
+
+            JPanel leftPanel = new JPanel();
+            leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+            leftPanel.add(Box.createRigidArea(new Dimension(100, 0)));
+            leftPanel.add(projectNameLabelL);
+            leftPanel.add(Box.createRigidArea(new Dimension(10, 5)));
+            leftPanel.add(savedPathLabelL);
+            leftPanel.add(Box.createRigidArea(new Dimension(10, 5)));
+            leftPanel.add(filesTypesLabelL);
+
+            JPanel rightPanel = new JPanel();
+            rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+            rightPanel.add(projectNameLabelR);
+            rightPanel.add(Box.createRigidArea(new Dimension(10, 5)));
+            rightPanel.add(savedPathLabelR);
+            rightPanel.add(Box.createRigidArea(new Dimension(10, 5)));
+            rightPanel.add(filesTypesLabelR);
+
+            projectInfoPanel.add(leftPanel);
+            projectInfoPanel.add(rightPanel);
+
+            JPanel projectManager = new JPanel();
+
+            projectInfoPanel.setBorder(BorderFactory.createTitledBorder("Project info"));
+            projectManager.setBorder(BorderFactory.createTitledBorder("Project manager"));
+
+            panel.add(projectInfoPanel);
+            panel.add(projectManager);
         }
 
-        createProjectButton.setPreferredSize(new Dimension(300, 100));
+        JPanel projectInfo = new JPanel();
+        this.setLayout(new BorderLayout());
+        projectInfo.setBackground(Color.BLUE);
 
-        this.add(createProjectButton, gbc);
-        this.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
-        });
+        this.add(panel);
         this.setSize(getWindowSize());
         this.setVisible(true);
     }
 
-    private void runStartScreen(MainController mainController) {
+    public void runStartScreen(MainController mainController) {
         JFrame jFrame = new JFrame("NEW PROJECT");
         Box boxLabel = Box.createVerticalBox();
         Box box = Box.createVerticalBox();
@@ -134,7 +129,7 @@ public class ApplicationWindow extends JFrame {
         JTextField projectNameField = new JTextField();
         JButton selectSavePath = new JButton("Select");
         JButton create = new JButton("Create");
-        JCheckBox isDefalultSeriesNames = new JCheckBox();
+        JCheckBox isDefaultSeriesNames = new JCheckBox();
         JCheckBox isDefaultDimensionNames = new JCheckBox();
 
         jPanel1.setName("Create new project");
@@ -179,16 +174,15 @@ public class ApplicationWindow extends JFrame {
                 String projectName = projectNameField.getText();
                 String savedPath = savedPathField.getText();
                 String defaultFilesTypes = fileTypesComboBox.getSelectedItem().toString();
-                boolean defaultDataSeriesNames = isDefalultSeriesNames.isSelected();
+                boolean defaultDataSeriesNames = isDefaultSeriesNames.isSelected();
                 boolean defaultDimensionNames = isDefaultDimensionNames.isSelected();
 
                 Project project = onClickCreateButton(projectName, savedPath, defaultFilesTypes, defaultDataSeriesNames, defaultDimensionNames);
                 mainController.setProject(project);
                 jFrame.dispose();
                 setCreated(true);
-                getContentPane().removeAll();
-                getContentPane().repaint();
                 JOptionPane.showMessageDialog(null, "Project was successfully created!");
+                run(mainController);
             }
         });
 
@@ -214,7 +208,7 @@ public class ApplicationWindow extends JFrame {
         box.add(Box.createVerticalStrut(15));
         box.add(projectNameField);
         box.add(Box.createVerticalStrut(15));
-        box.add(isDefalultSeriesNames);
+        box.add(isDefaultSeriesNames);
         box.add(Box.createVerticalStrut(15));
         box.add(isDefaultDimensionNames);
 
