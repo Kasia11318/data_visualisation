@@ -7,6 +7,10 @@ public class MainController {
     private DataController dataController;
     private Project project;
 
+    public MainController() {
+        dataController = new DataController();
+    }
+
     public DataController getDataController() {
         return dataController;
     }

@@ -1,6 +1,8 @@
 package View;
 
 import Controller.MainController;
+import Model.Data;
+import Model.Project;
 import jdk.nashorn.internal.scripts.JO;
 
 import javax.swing.*;
@@ -46,7 +48,10 @@ public class MainMenuBar extends JMenuBar {
 
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION ) {
                     try {
-                        mainController.getProject().loadProject(chooser.getSelectedFile().getPath());
+                        Project project = new Project();
+                        project.loadProject(chooser.getSelectedFile().getPath());
+                        mainController.setProject(project);
+                        applicationWindow.run(mainController);
                     } catch (IOException exception) {
                         JOptionPane.showMessageDialog(null, exception.getMessage());
                     }
@@ -73,7 +78,9 @@ public class MainMenuBar extends JMenuBar {
 
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION ) {
                     try {
-                        mainController.getDataController().importData(chooser.getSelectedFile().getPath());
+                        Data data = mainController.getDataController().importData(chooser.getSelectedFile().getName());
+                        mainController.getProject().setData(data);
+                        applicationWindow.run(mainController);
                     } catch (IOException exception) {
                         JOptionPane.showMessageDialog(null, exception.getMessage());
                     }
