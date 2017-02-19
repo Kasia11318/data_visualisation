@@ -1,3 +1,3 @@
-smthOrJustWhiteSpace    wymiar1		wymiar2		wymiar3		wymiar4
-firstSeries     100		90		10		22
-secondSeries    33		12		11		44
+coordinates    punkt1		punkt2		punkt3		punkt4
+x     100		90		10		22
+y    33		12		11		44

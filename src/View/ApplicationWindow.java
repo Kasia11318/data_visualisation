@@ -1,12 +1,15 @@
 package View;
 
 import Controller.MainController;
-import Model.Project;
+import Model.*;
+import Model.Point;
 import com.sun.deploy.panel.NodeBorder;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.List;
 import java.awt.event.*;
+import java.util.*;
 
 public class ApplicationWindow extends JFrame {
 
@@ -68,6 +71,52 @@ public class ApplicationWindow extends JFrame {
             JLabel savedPathLabelL = new JLabel("Saved path: ");
             JLabel filesTypesLabelL = new JLabel("Files types: ");
 
+            JPanel projectManager = new JPanel();
+            projectManager.setLayout(new BoxLayout(projectManager, BoxLayout.Y_AXIS));
+
+            if (!mainController.getProject().getData().getData().isEmpty()) {
+                JLabel generateGraphLabel = new JLabel("Generate a graph: ");
+                JButton twoD = new JButton("2D");
+                JButton threeD = new JButton("3D");
+                JButton parallel = new JButton("Parallel");
+
+                twoD.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        CoordinateSystem coordinateSystem = new CoordinateSystem();
+                        coordinateSystem.setCoordinateSystemType(CoordinateSystem.CoordinateSystemType.TWO_D);
+
+                        java.util.List<java.util.List<Float>> data = mainController.getProject().getData().getData();
+
+                        for (java.util.List<Float> coordinates : data) {
+                            Point point = new Point();
+                            point.setDimensionals(coordinates);
+                            coordinateSystem.addPoint(point);
+                        }
+
+                        Diagram diagram = new Diagram(coordinateSystem);
+                        diagram.draw();
+                        diagram.setVisible(true);
+                    }
+                });
+
+                threeD.setEnabled(false);
+                parallel.setEnabled(false);
+
+                JPanel labels = new JPanel();
+                labels.add(generateGraphLabel);
+
+                JPanel buttons = new JPanel();
+                buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+                buttons.add(twoD);
+                buttons.add(threeD);
+                buttons.add(parallel);
+
+                projectManager.add(labels);
+                projectManager.add(buttons);
+
+            }
+
             JLabel projectNameLabelR = new JLabel(mainController.getProject().getProjectName());
             JLabel savedPathLabelR = new JLabel(mainController.getProject().getPathSavedFile());
             JLabel filesTypesLabelR = new JLabel(mainController.getProject().getDefaultOpenFilesType());
@@ -94,8 +143,6 @@ public class ApplicationWindow extends JFrame {
 
             projectInfoPanel.add(leftPanel);
             projectInfoPanel.add(rightPanel);
-
-            JPanel projectManager = new JPanel();
 
             projectInfoPanel.setBorder(BorderFactory.createTitledBorder("Project info"));
             projectManager.setBorder(BorderFactory.createTitledBorder("Project manager"));

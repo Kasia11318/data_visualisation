@@ -119,42 +119,4 @@ public class Diagram extends JFrame {
                 break;
         }
     }
-
-    public static void main(String[] args) {
-
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                CoordinateSystem coordinateSystem = new CoordinateSystem();
-                coordinateSystem.setCoordinateSystemType(CoordinateSystem.CoordinateSystemType.TWO_D);
-                Point point1 = new Point();
-                List<Float> dims1 = new ArrayList<>();
-                dims1.add(1.0f);
-                dims1.add(-4.0f);
-                point1.setDimensionals(dims1);
-                coordinateSystem.addPoint(point1);
-                Point point2 = new Point();
-                List<Float> dims2 = new ArrayList<>();
-                dims2.add(10.f);
-                dims2.add(32.4f);
-                point2.setDimensionals(dims2);
-                coordinateSystem.addPoint(point2);
-                Point point3 = new Point();
-                List<Float> dims3 = new ArrayList<>();
-                dims3.add(-50.2f);
-                dims3.add(10.4f);
-                point3.setDimensionals(dims3);
-                coordinateSystem.addPoint(point3);
-                Point point4 = new Point();
-                List<Float> dims4 = new ArrayList<>();
-                dims4.add(-10.f);
-                dims4.add(-128.4f);
-                point4.setDimensionals(dims4);
-                coordinateSystem.addPoint(point4);
-                Diagram ex = new Diagram(coordinateSystem);
-                ex.draw();
-                ex.setVisible(true);
-            }
-        });
-    }
 }
